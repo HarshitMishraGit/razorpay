@@ -43,7 +43,6 @@
     var getEl = document.getElementById.bind(document);
     var formatter = Razorpay.setFormatter(getEl("parent-form"));
     var cvvField = getEl('card_cvv');
-
     formatter.add('card', getEl('card_number'))
         .on('network', function(o) {
 
@@ -54,7 +53,7 @@
             cvvField.maxLength = cvvlen;
             cvvField.pattern = '^[0-9]{' + cvvlen + '}$';
 
-            getEl('card_type').innerHTML = type;
+            // getEl('card_type').innerHTML = type;
         })
         .on('change', function() {
             var isValid = this.isValid();
@@ -106,15 +105,28 @@
         razorpay.createPayment(data);
 
         razorpay.on('payment.success', function(resp) {
+            console.log("This is response getting in razorpay function ",resp);
             swal("Success!", "Your payment is sucess", "success");
+            // let User={
+            //          razorpay_payment_id: resp.razorpay_payment_id,
+            //         razorpay_order_id: resp.razorpay_order_id,
+            //         razorpay_signature: resp.razorpay_signature,
+            //         }
+ // ==========================>>>>>>>>>>>>>>>>>>> Main problem here is that it is not sending the json object in post request========//
             $.ajax({
-                url: '/checkout/pay-verify',
+                url: '/checkout/pay_verify',
                 type: 'POST',
-                data: {
-                    razorpay_payment_id: resp.razorpay_payment_id,
+                data:{
+                     razorpay_payment_id: resp.razorpay_payment_id,
                     razorpay_order_id: resp.razorpay_order_id,
                     razorpay_signature: resp.razorpay_signature,
+                    },
+                // dataType:"json",
+                success:function(result){
+                        console.log("ajax post request is working fine",result);
                 }
+                
+                
             })
         }); // will pass payment ID, order ID, and Razorpay signature to success handler.
 
